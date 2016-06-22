@@ -1,0 +1,57 @@
+---
+- hosts: localhost
+  connection: local
+  gather_facts: no
+  vars_files:
+    - vars/example.yml
+
+# EXAMPLE SKYTAP ANSIBLE PLAYBOOK
+# ===============================
+# Copyright (c) 2016 Ben Coleman
+# Software provided under the terms of the Apache 2.0 license http://www.apache.org/licenses/LICENSE-2.0.txt
+
+
+###################################################################################
+### Create and prepare environment in Skytap via API
+###################################################################################
+
+  tasks:
+  - name: Build web cluster environment in Skytap
+    skytap_env: username={{api_user}} token={{api_token}} action=create template_id={{template_id}} name='Web cluster {{ 10000 | random }}'
+    register: new_env
+
+  - name: Join networks so Ansible host can see the hosts in new environment
+    skytap_icnr: username={{api_user}} token={{api_token}} action=create target_net_id={{deployment_net}} source_net_id={{new_env.api_result.networks[0].id}}
+
+  - name: Get environment data
+    skytap_env: username={{api_user}} token={{api_token}} action=read environment_id={{new_env.api_result.id}}
+    register: new_env_icnr
+
+  - name: Add each hosts NAT'ed IP to dynamic inventory
+    no_log: True
+    add_host: name={{item.interfaces[0].nat_addresses.network_nat_addresses[0].ip_address}} groups=new_web_cluster ansible_user={{skytap_ssh_user}}
+    with_items:
+      - "{{new_env_icnr.api_result.vms}}"
+    when: "item.interfaces[0].nat_addresses is defined and 'Web' in item.name"
+
+  - name: Set environment running
+    skytap_env: username={{api_user}} token={{api_token}} action=modify environment_id={{new_env.api_result.id}} state=running
+
+###################################################################################
+### Deploy software stack into new environment
+###################################################################################
+
+- hosts: new_web_cluster
+  gather_facts: no
+  tasks:
+  - name: Wait for hosts to boot up and SSH to be available
+    local_action: wait_for port=22 host="{{inventory_hostname}}" search_regex=OpenSSH delay=60 timeout=300
+
+  - name: Ensure Apache is at the latest version
+    become: yes
+    apt: name=apache2 state=latest update_cache=yes
+    notify:
+    - restart
+  handlers:
+    - name: restart
+      service: name=apache2 state=restarted

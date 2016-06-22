@@ -1,0 +1,34 @@
+---
+- hosts: localhost
+  connection: local
+  gather_facts: no
+  vars_files:
+    - vars/example.yml
+
+# EXAMPLE SKYTAP ANSIBLE PLAYBOOK
+# ===============================
+# Copyright (c) 2016 Ben Coleman
+# Software provided under the terms of the Apache 2.0 license http://www.apache.org/licenses/LICENSE-2.0.txt
+
+
+###################################################################################
+###
+###################################################################################
+
+  tasks:
+  - name: List environments
+    skytap_template: username={{api_user}} token={{api_token}} action=list
+    register: list_result
+
+  - name: Save environment as template
+    skytap_template: username={{api_user}} token={{api_token}} action=create environment_id={{environment_id}} name='New template'
+    register: new_template
+
+  - name: Rename template
+    skytap_template: username={{api_user}} token={{api_token}} action=modify template_id={{new_template.api_result.id}} name='My template'
+
+  - name: Change owner
+    skytap_template: username={{api_user}} token={{api_token}} action=modify template_id={{new_template.api_result.id}} owner_id=167420
+    
+#  - name: Delete template
+#    skytap_template: username={{api_user}} token={{api_token}} action=delete template_id={{new_template.api_result.id}}
