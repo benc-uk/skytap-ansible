@@ -1,0 +1,25 @@
+---
+- hosts: localhost
+  connection: local
+  gather_facts: no
+  vars_files:
+    - vars/example.yml
+
+# EXAMPLE SKYTAP ANSIBLE PLAYBOOK
+# ===============================
+# Copyright (c) 2016 Ben Coleman
+# Software provided under the terms of the Apache 2.0 license http://www.apache.org/licenses/LICENSE-2.0.txt
+
+
+###################################################################################
+### Example of creating and interacting with environments in Skytap
+###################################################################################
+
+  tasks:
+  - name: List my existing environments
+    skytap_environment: username={{api_user}} token={{api_token}} action=list
+    register: list_result
+
+  - name: Create a new environment from template
+    skytap_environment: username={{api_user}} token={{api_token}} action=create template_id={{template_id}} name='New environment, cool!'
+    register: new_env

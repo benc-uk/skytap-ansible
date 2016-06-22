@@ -12,11 +12,11 @@
 
 
 ###################################################################################
-###
+### Example of using Skytap templates and common actions on them
 ###################################################################################
 
   tasks:
-  - name: List environments
+  - name: List templates
     skytap_template: username={{api_user}} token={{api_token}} action=list
     register: list_result
 
@@ -28,7 +28,10 @@
     skytap_template: username={{api_user}} token={{api_token}} action=modify template_id={{new_template.api_result.id}} name='My template'
 
   - name: Change owner
-    skytap_template: username={{api_user}} token={{api_token}} action=modify template_id={{new_template.api_result.id}} owner_id=167420
-    
-#  - name: Delete template
-#    skytap_template: username={{api_user}} token={{api_token}} action=delete template_id={{new_template.api_result.id}}
+    skytap_template: username={{api_user}} token={{api_token}} action=modify template_id={{new_template.api_result.id}} owner_id={{user_id}}
+
+  - name: Copy template
+    skytap_template: username={{api_user}} token={{api_token}} action=copy template_id={{new_template.api_result.id}} owner_id={{user_id}} name='Copied template'
+
+  - name: Delete orginal new template
+    skytap_template: username={{api_user}} token={{api_token}} action=delete template_id={{new_template.api_result.id}}

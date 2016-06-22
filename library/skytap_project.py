@@ -43,11 +43,10 @@ def main():
         argument_spec = dict(
             username = dict(required=True),
             token = dict(required=True),
-            action = dict(default='create', choices=['create', 'delete', 'list']),
+            action = dict(default='create', choices=['create', 'delete', 'list', 'read', 'list_users', 'add_env', 'add_asset', 'add_template']),
             project_id = dict(required=False),
-            environment_id = dict(required=False),
+            object_id = dict(required=False),
             name = dict(required=False),
-            owner_id = dict(required=False),
         ),
         supports_check_mode=False
     )
@@ -68,6 +67,27 @@ def main():
 
     if module.params.get('action') == 'list':
         status, result = restCall(auth, 'GET', '/v2/projects?scope=me&count=100')
+
+    if module.params.get('action') == 'list_users':
+        status, result = restCall(auth, 'GET', '/v2/projects/' + str(module.params.get('project_id')) + '/users' )
+
+    if 'add_' in module.params.get('action'):
+        if not module.params.get('project_id'):
+            module.fail_json(msg="project_id is required param when action=add")
+        if not module.params.get('object_id'):
+            module.fail_json(msg="object_id is required param when action=add")
+        object_type = ''
+        if module.params.get('action') == 'add_env': object_type = 'configurations'
+        if module.params.get('action') == 'add_asset': object_type = 'assets'
+        if module.params.get('action') == 'add_template': object_type = 'templates'
+
+        status, result = restCall(auth, 'POST', '/v2/projects/' + str(module.params.get('project_id')) + '/'+object_type+'/' + str(module.params.get('object_id')) )
+
+    if module.params.get('action') == 'read':
+        if not module.params.get('project_id'):
+            module.fail_json(msg="project_id is required param when action=read")
+
+        status, result = restCall(auth, 'GET', '/v2/projects/'+str(module.params.get('project_id')))
 
     # Check results and exit
     if status != requests.codes.ok:

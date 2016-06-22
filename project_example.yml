@@ -12,23 +12,30 @@
 
 
 ###################################################################################
-###
+### Example of actions carried out on a Skytap project
 ###################################################################################
 
   tasks:
-  - name: List environments
-    skytap_template: username={{api_user}} token={{api_token}} action=list
+  - name: List projects
+    skytap_project: username={{api_user}} token={{api_token}} action=list
     register: list_result
 
-  - name: Save environment as template
-    skytap_template: username={{api_user}} token={{api_token}} action=create environment_id={{environment_id}} name='New template'
-    register: new_template
+  - name: Create a new project
+    skytap_project: username={{api_user}} token={{api_token}} action=create name='New project 1234'
+    register: new_project
 
-  - name: Rename template
-    skytap_template: username={{api_user}} token={{api_token}} action=modify template_id={{new_template.api_result.id}} name='My template'
+  - name: List project's users
+    skytap_project: username={{api_user}} token={{api_token}} action=list_users project_id={{new_project.api_result.id}}
+    register: project_users
 
-  - name: Change owner
-    skytap_template: username={{api_user}} token={{api_token}} action=modify template_id={{new_template.api_result.id}} owner_id=167420
-    
-#  - name: Delete template
-#    skytap_template: username={{api_user}} token={{api_token}} action=delete template_id={{new_template.api_result.id}}
+  - name: Add environment to project
+    skytap_project: username={{api_user}} token={{api_token}} action=add_env project_id={{new_project.api_result.id}} object_id={{environment_id}}
+
+  - name: Add template to project
+    skytap_project: username={{api_user}} token={{api_token}} action=add_template project_id={{new_project.api_result.id}} object_id={{template_id}}
+
+  - name: Add asset to project
+    skytap_project: username={{api_user}} token={{api_token}} action=add_asset project_id={{new_project.api_result.id}} object_id={{asset_id}}
+
+  - name: Delete project
+    skytap_project: username={{api_user}} token={{api_token}} action=delete project_id={{new_project.api_result.id}}

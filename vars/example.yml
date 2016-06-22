@@ -1,6 +1,12 @@
 ---
 api_user: bcoleman_sa
 api_token: 01ba4318b714bc11744f4c88b5c95c400f5d4c4c
+
 template_id: 813953
 environment_id: 8153468
+asset_id: 131340
+user_id: 167420
+deployment_net_id: 4364344
+web_template_id: 813921
+
 skytap_ssh_user: skytap
