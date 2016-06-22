@@ -106,7 +106,7 @@ def main():
         while True:
             status, result = restCall(auth, 'GET', '/v1/configurations/'+str(module.params.get('environment_id')))
             tries = tries + 1
-            if status != 423 or tries > 30:
+            if (status != 423 or status != 422) or tries > 30:
                 time.sleep(5)
                 break
             time.sleep(5)
