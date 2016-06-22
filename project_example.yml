@@ -17,25 +17,25 @@
 
   tasks:
   - name: List projects
-    skytap_project: username={{api_user}} token={{api_token}} action=list
+    skytap_project: action=list username={{api_user}} token={{api_token}}
     register: list_result
 
   - name: Create a new project
-    skytap_project: username={{api_user}} token={{api_token}} action=create name='New project 1234'
+    skytap_project: action=create name='New project 1234' username={{api_user}} token={{api_token}}
     register: new_project
 
   - name: List project's users
-    skytap_project: username={{api_user}} token={{api_token}} action=list_users project_id={{new_project.api_result.id}}
+    skytap_project: action=list_users project_id={{new_project.api_result.id}} username={{api_user}} token={{api_token}}
     register: project_users
 
   - name: Add environment to project
-    skytap_project: username={{api_user}} token={{api_token}} action=add_env project_id={{new_project.api_result.id}} object_id={{environment_id}}
+    skytap_project: action=add_env project_id={{new_project.api_result.id}} object_id={{environment_id}} username={{api_user}} token={{api_token}}
 
   - name: Add template to project
-    skytap_project: username={{api_user}} token={{api_token}} action=add_template project_id={{new_project.api_result.id}} object_id={{template_id}}
+    skytap_project: action=add_template project_id={{new_project.api_result.id}} object_id={{template_id}} username={{api_user}} token={{api_token}}
 
   - name: Add asset to project
-    skytap_project: username={{api_user}} token={{api_token}} action=add_asset project_id={{new_project.api_result.id}} object_id={{asset_id}}
+    skytap_project: action=add_asset project_id={{new_project.api_result.id}} object_id={{asset_id}} username={{api_user}} token={{api_token}}
 
   - name: Delete project
-    skytap_project: username={{api_user}} token={{api_token}} action=delete project_id={{new_project.api_result.id}}
+    skytap_project: action=delete project_id={{new_project.api_result.id}} username={{api_user}} token={{api_token}} 

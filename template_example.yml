@@ -17,21 +17,21 @@
 
   tasks:
   - name: List templates
-    skytap_template: username={{api_user}} token={{api_token}} action=list
+    skytap_template: action=list username={{api_user}} token={{api_token}}
     register: list_result
 
   - name: Save environment as template
-    skytap_template: username={{api_user}} token={{api_token}} action=create environment_id={{environment_id}} name='New template'
+    skytap_template: action=create environment_id={{environment_id}} name='New template' username={{api_user}} token={{api_token}}
     register: new_template
 
   - name: Rename template
-    skytap_template: username={{api_user}} token={{api_token}} action=modify template_id={{new_template.api_result.id}} name='My template'
+    skytap_template: action=modify template_id={{new_template.api_result.id}} name='My template' username={{api_user}} token={{api_token}}
 
   - name: Change owner
-    skytap_template: username={{api_user}} token={{api_token}} action=modify template_id={{new_template.api_result.id}} owner_id={{user_id}}
+    skytap_template: action=modify template_id={{new_template.api_result.id}} owner_id={{user_id}} username={{api_user}} token={{api_token}}
 
   - name: Copy template
-    skytap_template: username={{api_user}} token={{api_token}} action=copy template_id={{new_template.api_result.id}} owner_id={{user_id}} name='Copied template'
+    skytap_template: action=copy template_id={{new_template.api_result.id}} owner_id={{user_id}} name='Copied template' username={{api_user}} token={{api_token}}
 
   - name: Delete orginal new template
-    skytap_template: username={{api_user}} token={{api_token}} action=delete template_id={{new_template.api_result.id}}
+    skytap_template: action=delete template_id={{new_template.api_result.id}} username={{api_user}} token={{api_token}} 

@@ -17,19 +17,22 @@
 
   tasks:
   - name: List my existing environments
-    skytap_environment: username={{api_user}} token={{api_token}} action=list
+    skytap_environment: action=list username={{api_user}} token={{api_token}}
     register: list_result
 
   - name: Create a new environment from template
-    skytap_environment: username={{api_user}} token={{api_token}} action=create template_id={{template_id}} name='New environment, cool!'
+    skytap_environment: action=create template_id={{template_id}} name='New environment, cool!' username={{api_user}} token={{api_token}}
     register: new_env
 
   - name: Copy and duplicate environment
-    skytap_environment: username={{api_user}} token={{api_token}} action=copy environment_id={{new_env.api_result.id}} name='Copy of new environment'
+    skytap_environment: action=copy environment_id={{new_env.api_result.id}} name='Copy of new environment' username={{api_user}} token={{api_token}}
     register: copied_env
 
+  - name: Wait until ready, in case env is still copying - holds off for API rate limiting
+    skytap_environment: action=wait_ratelimit environment_id={{new_env.api_result.id}} username={{api_user}} token={{api_token}}
+
   - name: Start first environment running
-    skytap_environment: username={{api_user}} token={{api_token}} action=modify environment_id={{new_env.api_result.id}} state=running
+    skytap_environment: action=modify environment_id={{new_env.api_result.id}} state=running username={{api_user}} token={{api_token}}
 
     # You might fetch the ICNR NAT IP or VPN NAT IP here instead, depending on your network & Ansible deployment
     #   e.g. add_host: name={{item.interfaces[0].nat_addresses.network_nat_addresses[0].ip_address}}
@@ -39,6 +42,8 @@
     add_host: name={{item.interfaces[0].ip}} groups=skytap_dynamic_group ansible_user={{skytap_ssh_user}}
     with_items:
       - "{{new_env.api_result.vms}}"
+
+# -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
 - hosts: skytap_dynamic_group
   gather_facts: no
