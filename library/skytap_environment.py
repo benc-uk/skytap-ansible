@@ -43,7 +43,7 @@ def main():
         argument_spec = dict(
             username = dict(required=True),
             token = dict(required=True),
-            action = dict(default='create', choices=['create', 'modify', 'delete', 'read', 'list', 'wait_ratelimit']),
+            action = dict(default='create', choices=['create', 'modify', 'delete', 'read', 'list', 'wait_ratelimit', 'copy']),
             template_id = dict(required=False),
             environment_id = dict(required=False),
             name = dict(required=False),
@@ -87,6 +87,15 @@ def main():
 
     if module.params.get('action') == 'list':
         status, result = restCall(auth, 'GET', '/v2/configurations?scope=me&count=100')
+
+    if module.params.get('action') == 'copy':
+        if not module.params.get('environment_id'):
+            module.fail_json(msg="environment_id is required param when action=copy")
+        request_data = {"configuration_id": module.params.get('environment_id')}
+        if module.params.get('name'):
+            request_data['name'] = module.params.get('name')
+
+        status, result = restCall(auth, 'POST', '/v1/configurations', data=json.dumps(request_data))
 
     if module.params.get('action') == 'wait_ratelimit':
         if not module.params.get('environment_id'):

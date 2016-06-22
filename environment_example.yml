@@ -23,3 +23,30 @@
   - name: Create a new environment from template
     skytap_environment: username={{api_user}} token={{api_token}} action=create template_id={{template_id}} name='New environment, cool!'
     register: new_env
+
+  - name: Copy and duplicate environment
+    skytap_environment: username={{api_user}} token={{api_token}} action=copy environment_id={{new_env.api_result.id}} name='Copy of new environment'
+    register: copied_env
+
+  - name: Start first environment running
+    skytap_environment: username={{api_user}} token={{api_token}} action=modify environment_id={{new_env.api_result.id}} state=running
+
+    # You might fetch the ICNR NAT IP or VPN NAT IP here instead, depending on your network & Ansible deployment
+    #   e.g. add_host: name={{item.interfaces[0].nat_addresses.network_nat_addresses[0].ip_address}}
+    # You might also filter the hosts
+    #   e.g. when: "item.interfaces[0].nat_addresses is defined and 'Foobar' in item.name"
+  - name: Add each host to Ansible dynamic inventory
+    add_host: name={{item.interfaces[0].ip}} groups=skytap_dynamic_group ansible_user={{skytap_ssh_user}}
+    with_items:
+      - "{{new_env.api_result.vms}}"
+
+- hosts: skytap_dynamic_group
+  gather_facts: no
+  tasks:
+    # This is an example of how to wait for the hosts to be online and available via SSH
+    # Note. You must set 'gather_facts: no' for this to work and run as a local_action
+  #- name: Wait for hosts to boot up and SSH to be available
+  #  local_action: wait_for port=22 host="{{inventory_hostname}}" search_regex=OpenSSH delay=60 timeout=300
+
+  - name: Example. Do something real here with new host
+    debug: var=inventory_hostname
