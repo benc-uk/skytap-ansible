@@ -4,11 +4,11 @@ Custom modules for Ansible for working with Skytap Cloud. Included are some exam
 
 ### Overview
 This is a set of modules for integrating Skytap with Ansible. 
-Four modules are provided and each has a range of actions in Skytap they can carry out. All modules are wrappers around the standard REST API
+Four modules are currently provided and each has a range of actions in Skytap they can carry out. All modules are wrappers around the standard REST API
 
 ### Basic usage and Pre-reqs
 Pre-reqs:
- - A working Ansible deployment. It has been tested with Ansible deployed in Skytap, but this is not a requirement
+ - A working Ansible deployment. These modules have been developed & tested with an Ansible 2.1 instance deployed on Ubuntu 14.04 and running in Skytap. But any functional Ansible instance should work
  - Skytap account with username and [your API token](http://help.skytap.com/kb-find-api-token.html)
 
 Getting started:
