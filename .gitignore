@@ -1,1 +1,3 @@
 *.retry
+.ftpconfig
+.DS_Store
