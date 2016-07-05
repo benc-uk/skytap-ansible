@@ -1,6 +1,6 @@
 ---
-api_user: bcoleman_sa
-api_token: 01ba4318b714bc11744f4c88b5c95c400f5d4c4c
+api_user: your_skytap_user
+api_token: your_skytap_api_token
 
 template_id: 813953
 environment_id: 8153468
