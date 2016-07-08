@@ -1,3 +1,4 @@
 *.retry
 .ftpconfig
 .DS_Store
+vars/example.yml
