@@ -1,0 +1,12 @@
+---
+api_user: your_user
+api_token: your_skytap_api_token
+
+template_id: 813953
+environment_id: 8153468
+asset_id: 131340
+user_id: 167420
+deployment_net_id: 4364344
+web_template_id: 813921
+
+skytap_ssh_user: skytap
